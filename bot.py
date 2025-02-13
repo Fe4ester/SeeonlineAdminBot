@@ -9,7 +9,6 @@ config = load_config()
 bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher()
 
-
 dp.include_routers(
     base_commands_router,
     smsbower_router
