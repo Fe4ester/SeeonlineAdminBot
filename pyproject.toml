@@ -1,0 +1,15 @@
+[tool.poetry]
+package-mode = false
+name = "adminbot"
+version = "0.1.0"
+description = ""
+authors = ["Fe4ester <xdxdxd4305@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
