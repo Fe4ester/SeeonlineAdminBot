@@ -1,0 +1,6 @@
+.venv
+.gitignore
+.idea
+pyproject.toml
+poetry.lock
+/keyboards
