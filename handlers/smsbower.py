@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 from config import load_config
-from services.countries import countries
+from services.smsbower_config import countries
 from services.smsbower_api import SmsBowerAPI
 
 router = Router()
