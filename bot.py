@@ -2,8 +2,11 @@ import asyncio
 import signal
 from aiogram import Bot, Dispatcher
 from config import load_config
+
+# роутеры
 from handlers.base_commands import router as base_commands_router
 from handlers.smsbower import router as smsbower_router
+from handlers.admin_panel import router as admin_panel_router
 
 config = load_config()
 bot = Bot(token=config.BOT_TOKEN)
@@ -11,6 +14,7 @@ dp = Dispatcher()
 
 dp.include_routers(
     base_commands_router,
+    admin_panel_router,
     # smsbower_router
 )
 
