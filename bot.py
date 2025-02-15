@@ -11,7 +11,7 @@ dp = Dispatcher()
 
 dp.include_routers(
     base_commands_router,
-    smsbower_router
+    # smsbower_router
 )
 
 
