@@ -8,10 +8,10 @@ from aiogram import F
 # клавиатуры
 from keyboards.reply_kb import get_admin_panel_keyboard
 from keyboards.inline_kb import (
-    get_monitor_accounts_inline_keyboard,
-    get_monitored_accounts_inline_keyboard,
-    get_monitor_settings_inline_keyboard,
-    get_additional_functions_inline_keyboard
+    MonitorAccountsKeyboard,
+    MonitorSettingsKeyboard,
+    MonitoredAccountsKeyboard,
+    AdditionalFunctionsKeyboard
 )
 
 router = Router()
@@ -45,7 +45,7 @@ async def monitor_accounts_menu(message: Message):
     )
 
     await message.answer(formatted_message, parse_mode="HTML")
-    await message.answer('Выберите действие:', reply_markup=get_monitor_accounts_inline_keyboard())
+    await message.answer('Выберите действие:', reply_markup=MonitorAccountsKeyboard.get_keyboard('main'))
 
 
 @router.message(F.text == "👀 Отслеживаемые аккаунты")
@@ -62,7 +62,7 @@ async def monitored_accounts_menu(message: Message):
     )
 
     await message.answer(formatted_message, parse_mode="HTML")
-    await message.answer('Выберите действие:', reply_markup=get_monitored_accounts_inline_keyboard())
+    await message.answer('Выберите действие:', reply_markup=MonitoredAccountsKeyboard.get_keyboard('main'))
 
 
 @router.message(F.text == "⚙️ Настройки монитор-аккаунтов")
@@ -79,7 +79,7 @@ async def monitor_settings_menu(message: Message):
     )
 
     await message.answer(formatted_message, parse_mode="HTML")
-    await message.answer('Выберите действие:', reply_markup=get_monitor_settings_inline_keyboard())
+    await message.answer('Выберите действие:', reply_markup=MonitorSettingsKeyboard.get_keyboard('main'))
 
 
 @router.message(F.text == "🛠 Доп. функции")
@@ -89,12 +89,11 @@ async def additional_functions_menu(message: Message):
         "✨ <b>Возможности:</b>\n"
         "🔹 Проверить системную информацию\n"
         "🔹 Получить метрики\n"
-        "🔹 Авторизовать монитор-аккаунты\n\n"
         "⚠️ Все действия выполняются через инлайн-клавиатуру ниже\n\n"
         "⚙️ Если есть желание попу рвать то можешь попробовать команды\n /admin_commands"
     )
     await message.answer(formatted_message, parse_mode="HTML")
-    await message.answer('Выберите действие:', reply_markup=get_additional_functions_inline_keyboard())
+    await message.answer('Выберите действие:', reply_markup=AdditionalFunctionsKeyboard.get_keyboard('main'))
 
 
 @router.message(Command('admin_commands'))
