@@ -4,9 +4,14 @@ from aiogram import Bot, Dispatcher
 from config import load_config
 
 # роутеры
+## хендлеры
 from handlers.base_commands import router as base_commands_router
-from handlers.smsbower import router as smsbower_router
 from handlers.admin_panel import router as admin_panel_router
+## каллбек обработчики
+from callbacks.monitor_account_callbacks import router as monitor_account_callbacks_router
+from callbacks.monitored_account_callbacks import router as monitored_account_callbacks_router
+from callbacks.monitor_setting_callbacks import router as monitor_setting_callbacks_router
+from callbacks.additional_callbacks import router as additional_callbacks_router
 
 config = load_config()
 bot = Bot(token=config.BOT_TOKEN)
@@ -15,7 +20,11 @@ dp = Dispatcher()
 dp.include_routers(
     base_commands_router,
     admin_panel_router,
-    # smsbower_router
+    # smsbower_router,
+    monitor_account_callbacks_router,
+    monitored_account_callbacks_router,
+    monitor_setting_callbacks_router,
+    additional_callbacks_router,
 )
 
 
