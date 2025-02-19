@@ -13,9 +13,6 @@ class SmsBowerAPI:
                 return await response.text()
 
     def _check_errors(self, text: str, errors: dict):
-        """
-        Проверяет наличие ошибок в ответе API и выбрасывает исключение с соответствующим сообщением.
-        """
         for error_key, error_msg in errors.items():
             if error_key in text:
                 raise ValueError(error_msg)
