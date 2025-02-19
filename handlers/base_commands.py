@@ -19,7 +19,7 @@ async def cmd_start(message: Message):
 async def cmd_help(message: Message):
     formatted_message = (
         "🛠 <b>Ну чо, пробежимся по функционалу</b>\n\n"
-        "📡 /smsbower — Работа с API SmsBower\n"
+        "📡 /smsbower — Работа с API SmsBower\n(Отрублено нахуй - говно ебаное)\n\n"
         "🧑‍💻 /admin — Админ-панель\n\n"
         "⚠️ А больше нихуя нет, так что иди нахуй"
     )
