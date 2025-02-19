@@ -10,11 +10,13 @@ class Config:
     BOT_TOKEN: str
     SMSBOWER_API_URL: str
     SMSBOWER_TOKEN: str
+    SEEONLINE_API_URL: str
 
 
 def load_config() -> Config:
     return Config(
         BOT_TOKEN=os.getenv("BOT_TOKEN"),
         SMSBOWER_API_URL=os.getenv("SMSBOWER_API_URL"),
-        SMSBOWER_TOKEN=os.getenv("SMSBOWER_TOKEN")
+        SMSBOWER_TOKEN=os.getenv("SMSBOWER_TOKEN"),
+        SEEONLINE_API_URL=os.getenv("SEEONLINE_API_URL")
     )
