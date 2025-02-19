@@ -2,6 +2,7 @@ from typing import List, Tuple, Dict
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+
 class BaseCategoryKeyboard:
     menus: Dict[str, List[Tuple[str, str]]] = {}
 
@@ -25,10 +26,15 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
             ("Удалить аккаунты", "delete-monitor-accounts"),
             ("Авторизовать аккаунты", "auth-monitor-accounts"),
         ],
-        "secondary": [
-            ("Доп. действие 1", "monitor_sub1"),
-            ("Доп. действие 2", "monitor_sub2"),
+        "get": [
+            ("Получить весь список", "get-list-monitor-accounts"),
+            ("Получить аккаунт по PK", "get-monitor-account-by-pk"),
+            ("Получить аккаунт по user_id", "get-monitor-account-by-user_id"),
         ],
+        "add": [],
+        "edit": [],
+        "delete": [],
+        "auth": []
     }
 
 
