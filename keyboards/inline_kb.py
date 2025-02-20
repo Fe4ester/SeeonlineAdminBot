@@ -44,7 +44,11 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
             ("Удалить по UserID", "delete-monitor-account-by-user_id"),
             ("<<< Назад", "back-monitor-accounts"),
         ],
-        "auth": []
+        "auth": [
+            ("Авторизовать по PK", "auth-monitor-account-by-pk"),
+            ("Авторизовать по UserID", "auth-monitor-account-by-user_id"),
+            ("<<< Назад", "back-monitor-accounts"),
+        ]
     }
 
 

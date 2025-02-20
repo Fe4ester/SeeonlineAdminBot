@@ -21,13 +21,28 @@ class EditMonitorAccountByPK(StatesGroup):
     waiting_for_pk = State()
     waiting_for_form = State()
 
+
 class EditMonitorAccountByUserID(StatesGroup):
     waiting_for_user_id = State()
     waiting_for_form = State()
+
 
 # --------DELETE--------
 class DeleteMonitorAccountByPK(StatesGroup):
     waiting_for_pk = State()
 
+
 class DeleteMonitorAccountByUserID(StatesGroup):
     waiting_for_user_id = State()
+
+
+# -------AUTH--------
+
+class AuthMonitorAccountByPK(StatesGroup):
+    waiting_for_pk = State()
+    waiting_for_code = State()
+
+
+class AuthMonitorAccountByUserID(StatesGroup):
+    waiting_for_user_id = State()
+    waiting_for_code = State()

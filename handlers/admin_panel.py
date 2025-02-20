@@ -17,6 +17,7 @@ from states import (
     EditMonitorAccountByUserID,
     DeleteMonitorAccountByPK,
     DeleteMonitorAccountByUserID,
+    AuthMonitorAccountByPK,
 )
 
 # клавиатуры
@@ -558,3 +559,85 @@ async def process_delete_monitor_account_by_user_id(message: Message, state: FSM
     await message.answer("✅ Аккаунт удален", parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
 
     await state.clear()
+
+
+# --------AUTH--------
+
+# todo перепилить ебаную авторизацию
+
+@router.message(AuthMonitorAccountByPK.waiting_for_pk)
+async def process_auth_monitor_account_by_pk(message: Message, state: FSMContext):
+    pass
+    # api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+    #
+    # try:
+    #     pk = int(message.text)
+    # except ValueError:
+    #     await message.answer("❌ Введите корректный ID (число)")
+    #     return
+    #
+    # try:
+    #     auth_data = await api.start_auth_monitor_account(pk=pk)
+    # except ValueError as e:
+    #     await message.answer(f"❌ Не удалось начать авторизацию: {e}", reply_markup=get_admin_panel_keyboard())
+    #     await state.clear()
+    #     return
+    #
+    # await state.update_data(
+    #     phone_number=auth_data["phone_number"],
+    #     phone_code_hash=auth_data["phone_code_hash"],
+    #     api_id=auth_data["api_id"],
+    #     api_hash=auth_data["api_hash"],
+    #     monitor_id=auth_data["monitor_id"]
+    # )
+    #
+    # await message.answer(
+    #     f"Код отправлен на номер <b>{auth_data['phone_number']}</b>\n"
+    #     f"Введите код из Telegram/SMS:",
+    #     parse_mode="HTML"
+    # )
+    #
+    # await state.set_state(AuthMonitorAccountByPK.waiting_for_code)
+
+
+# todo допилить блять заебали
+
+@router.message(AuthMonitorAccountByPK.waiting_for_code)
+async def process_auth_monitor_account_by_pk_code(message: Message, state: FSMContext):
+    pass
+    # api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+    # code = message.text.strip()
+    #
+    # data = await state.get_data()
+    #
+    # phone_number = data.get("phone_number")
+    # phone_code_hash = data.get("phone_code_hash")
+    # api_id = data.get("api_id")
+    # api_hash = data.get("api_hash")
+    # monitor_id = data.get("monitor_id")
+    # temp_sesion = data.get("temp_sesion")
+    #
+    # if not all([phone_number, phone_code_hash, api_id, api_hash, monitor_id]):
+    #     await message.answer("❌ Не хватает данных для авторизации. Операция прервана",
+    #                          reply_markup=get_admin_panel_keyboard())
+    #     await state.clear()
+    #     return
+    #
+    # try:
+    #     session_str = await api.complete_auth_monitor_account(
+    #         code=code,
+    #         phone_number=phone_number,
+    #         phone_code_hash=phone_code_hash,
+    #         api_id=api_id,
+    #         api_hash=api_hash,
+    #         monitor_id=monitor_id,
+    #         temp_session=temp_sesion
+    #     )
+    # except ValueError as e:
+    #     await message.answer(f"❌ Ошибка авторизации: {e}", reply_markup=get_admin_panel_keyboard())
+    #     await state.clear()
+    #     return
+    #
+    # await message.answer(f"✅ Аккаунт успешно авторизован!\n {session_str}", reply_markup=get_admin_panel_keyboard())
+    #
+    # await state.clear()

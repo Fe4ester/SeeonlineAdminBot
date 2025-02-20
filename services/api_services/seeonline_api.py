@@ -1,5 +1,15 @@
 import aiohttp
 import urllib.parse
+import asyncio
+
+from telethon import TelegramClient
+from telethon.sessions import StringSession
+
+# ошибки
+from telethon.errors import (
+    SessionPasswordNeededError,
+    PhoneCodeExpiredError,
+)
 
 
 class SeeOnlineAPI:
@@ -107,6 +117,8 @@ class SeeOnlineAPI:
 
         url = self._build_url("monitors", pk=pk, query_params=query_params)
         return await self._fetch_json("DELETE", url)
+
+    # todo допилить авто авторизацию
 
     #
     # =========== AccountSession ===========
