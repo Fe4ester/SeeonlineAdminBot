@@ -8,7 +8,9 @@ from aiogram.fsm.context import FSMContext
 from states import (
     GetMonitorAccountByPK,
     GetMonitorAccountByUserID,
-    AddMonitorAccount
+    AddMonitorAccount,
+    EditMonitorAccountByPK,
+    EditMonitorAccountByUserID,
 )
 
 # клавиатуры
@@ -26,6 +28,9 @@ from config import load_config
 router = Router()
 
 config = load_config()
+
+
+# обработка состояний в handlers.admin_panel STATES!!!!
 
 
 # ----------------MAIN----------------
@@ -57,14 +62,12 @@ async def add_monitor_accounts_callback(callback: CallbackQuery, state: FSMConte
     await callback.answer()
 
 
-# todo допилить
 @router.callback_query(F.data == "edit-monitor-accounts")
 async def edit_monitor_accounts_callback(callback: CallbackQuery):
     await callback.message.edit_text(
-        'Текущий callback:\n edit-monitor-accounts',
-        reply_markup=MonitorAccountsKeyboard.get_keyboard('main')
+        'Выберите способ изменения:',
+        reply_markup=MonitorAccountsKeyboard().get_keyboard('edit')
     )
-    await callback.answer()
 
 
 # todo допилить
@@ -89,6 +92,7 @@ async def auth_monitor_accounts_callback(callback: CallbackQuery):
 
 # ----------------GET---------------
 
+# todo убрать кеширование и перенести его на уровень приложения
 # ---- с пагинацией, не путаться ----
 @router.callback_query(F.data == "get-list-monitor-accounts")
 async def get_list_monitor_accounts_callback(callback: CallbackQuery):
@@ -130,7 +134,6 @@ async def get_monitor_account_by_pk_callback(callback: CallbackQuery, state: FSM
     await callback.message.answer("🔍 Введите ID (PK) аккаунта для поиска:", reply_markup=get_cancel_keyboard())
     await state.set_state(GetMonitorAccountByPK.waiting_for_pk)
     await callback.answer()
-    # обработка в handlers.admin_panel STATES
 
 
 @router.callback_query(F.data == "get-monitor-account-by-user_id")
@@ -138,4 +141,19 @@ async def get_monitor_account_by_user_id_callback(callback: CallbackQuery, state
     await callback.message.answer("🔍 Введите UserID аккаунта для поиска:", reply_markup=get_cancel_keyboard())
     await state.set_state(GetMonitorAccountByUserID.waiting_for_user_id)
     await callback.answer()
-    # обработка в handlers.admin_panel STATES
+
+
+# ----------------EDIT----------------
+
+@router.callback_query(F.data == "edit-monitor-account-by-pk")
+async def edit_monitor_account_by_pk_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🔍 Введите ID (PK) аккаунта для изменения:", reply_markup=get_cancel_keyboard())
+    await state.set_state(EditMonitorAccountByPK.waiting_for_pk)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "edit-monitor-account-by-user_id")
+async def edit_monitor_account_by_user_id_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🔍 Введите UserID аккаунта для изменения:", reply_markup=get_cancel_keyboard())
+    await state.set_state(EditMonitorAccountByUserID.waiting_for_user_id)
+    await callback.answer()

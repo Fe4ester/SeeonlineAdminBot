@@ -12,7 +12,9 @@ from aiogram.fsm.context import FSMContext
 from states import (
     GetMonitorAccountByUserID,
     GetMonitorAccountByPK,
-    AddMonitorAccount
+    AddMonitorAccount,
+    EditMonitorAccountByPK,
+    EditMonitorAccountByUserID,
 )
 
 # клавиатуры
@@ -272,4 +274,240 @@ async def process_add_monitor_account(message: Message, state: FSMContext):
     else:
         await message.answer("❌ Ошибка при добавлении аккаунта. Попробуйте позже.")
 
-    await state.clear()  # Сбрасываем состояние
+    await state.clear()
+
+
+# --------EDIT--------
+# todo тут все переебашить нахуй, копипаста полная
+
+# Изменение по PK
+@router.message(EditMonitorAccountByPK.waiting_for_pk)
+async def process_edit_monitor_account_by_pk(message: Message, state: FSMContext):
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+
+    try:
+        pk = int(message.text)
+    except ValueError:
+        await message.answer("❌ Введите корректный ID (число)")
+        return
+
+    try:
+        account = await api.get_monitor_account(pk=pk)
+    except ValueError:
+        await message.answer("📭 Аккаунт с таким ID не найден")
+        return
+
+    formatted_message = (
+        "✅ <b>Аккаунт найден</b>\n\n"
+        f"🔹 <b>ID:</b> {account['id']}\n"
+        f"👤 <b>User ID:</b> <code>{account['user_id']}</code>\n"
+        f"🆔 <b>API ID:</b> <code>{account['api_id']}</code>\n"
+        f"🔑 <b>API Hash:</b> <code>{account['api_hash']}</code>\n"
+        f"✅ <b>Активен:</b> {'Да' if account['is_active'] else 'Нет'}\n"
+        f"🔐 <b>Авторизован:</b> {'Да' if account['is_auth'] else 'Нет'}\n"
+        f"🕒 <b>Создан:</b> {account['created_at']}\n"
+        f"🔄 <b>Обновлён:</b> {account['updates_at']}\n\n"
+        "✏️ <b>Введи новые данные. Можно изменить одно или несколько полей:</b>\n"
+        "<b>Формат:</b>\n"
+        "<code>user_id=1234567890</code>\n"
+        "<code>api_id=12345678</code>\n"
+        "<code>api_hash=abcdef1234567890abcdef1234567890</code>\n"
+        "<code>is_active=1</code>\n"
+        "<code>is_auth=0</code>\n\n"
+        "⚠️ Если поле не нужно менять, просто пропусти его."
+    )
+
+    await message.answer(formatted_message, parse_mode="HTML")
+
+    await state.update_data(pk=pk)
+    await state.set_state(EditMonitorAccountByPK.waiting_for_form)
+
+
+@router.message(EditMonitorAccountByPK.waiting_for_form)
+async def process_edit_monitor_account_by_pk_form(message: Message, state: FSMContext):
+    stored_data = await state.get_data()
+    pk = stored_data.get("pk")
+
+    if not pk:
+        await message.answer("❌ В состоянии не найден 'pk'. Операция прервана", reply_markup=get_admin_panel_keyboard())
+        await state.clear()
+        return
+
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+    lines = message.text.strip().split("\n")
+
+    valid_fields = {"user_id", "api_id", "api_hash", "is_active", "is_auth"}
+    update_data = {}
+
+    for line in lines:
+        if "=" not in line:
+            await message.answer(f"❌ Строка '{line}' не соответствует формату key=value")
+            return
+
+        key, value = line.split("=", 1)
+        key, value = key.strip(), value.strip()
+
+        if key not in valid_fields:
+            await message.answer(f"❌ Поле '{key}' нельзя изменить")
+            return
+
+        if key in ["user_id", "api_id"]:
+            if not value.isdigit():
+                await message.answer(f"❌ {key} должен содержать только цифры")
+                return
+            update_data[key] = int(value)
+
+        elif key == "api_hash":
+            if not re.fullmatch(r"\d+|[a-fA-F0-9]{32}", value):
+                await message.answer("❌ api_hash должен быть 32-значным шестнадцатеричным хэшем")
+                return
+            update_data[key] = value
+
+        elif key in ["is_active", "is_auth"]:
+            if value not in {"0", "1"}:
+                await message.answer(f"❌ {key} может быть только '0' (Нет) или '1' (Да)")
+                return
+            update_data[key] = bool(int(value))
+
+    if not update_data:
+        await message.answer("⚠️ Не указано ни одного корректного параметра для обновления")
+        return
+
+    try:
+        response = await api.update_monitor_account(update_data, pk=pk)
+    except ValueError as e:
+        await message.answer(f"❌ Ошибка при обновлении аккаунта: {e}", reply_markup=get_admin_panel_keyboard())
+        await state.clear()
+        return
+
+    formatted_message = (
+        f"✅ <b>Аккаунт успешно обновлён</b>\n\n"
+        f"🔹 <b>ID:</b> {response['id']}\n"
+        f"👤 <b>User ID:</b> <code>{response['user_id']}</code>\n"
+        f"🆔 <b>API ID:</b> <code>{response['api_id']}</code>\n"
+        f"🔑 <b>API Hash:</b> <code>{response['api_hash']}</code>\n"
+        f"✅ <b>Активен:</b> {'Да' if response['is_active'] else 'Нет'}\n"
+        f"🔐 <b>Авторизован:</b> {'Да' if response['is_auth'] else 'Нет'}\n"
+        f"🕒 <b>Создан:</b> {response['created_at']}\n"
+        f"🔄 <b>Обновлён:</b> {response['updates_at']}"
+    )
+
+    await message.answer(formatted_message, parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
+
+    await state.clear()
+
+# Изменение по user_id
+@router.message(EditMonitorAccountByUserID.waiting_for_user_id)
+async def process_edit_monitor_account_by_user_id(message: Message, state: FSMContext):
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+
+    try:
+        user_id = int(message.text.strip())
+    except ValueError:
+        await message.answer("❌ Введите корректный User ID (число)")
+        return
+
+    try:
+        account = await api.get_monitor_account(user_id=user_id)
+    except ValueError:
+        await message.answer("📭 Аккаунт с таким user_id не найден")
+        return
+
+    formatted_message = (
+        "✅ <b>Аккаунт найден</b>\n\n"
+        f"🔹 <b>ID:</b> {account['id']}\n"
+        f"👤 <b>User ID:</b> <code>{account['user_id']}</code>\n"
+        f"🆔 <b>API ID:</b> <code>{account['api_id']}</code>\n"
+        f"🔑 <b>API Hash:</b> <code>{account['api_hash']}</code>\n"
+        f"✅ <b>Активен:</b> {'Да' if account['is_active'] else 'Нет'}\n"
+        f"🔐 <b>Авторизован:</b> {'Да' if account['is_auth'] else 'Нет'}\n"
+        f"🕒 <b>Создан:</b> {account['created_at']}\n"
+        f"🔄 <b>Обновлён:</b> {account['updates_at']}\n\n"
+        "✏️ <b>Введи новые данные. Можно изменить одно или несколько полей:</b>\n"
+        "<b>Формат:</b>\n"
+        "<code>user_id=1234567890</code>\n"
+        "<code>api_id=12345678</code>\n"
+        "<code>api_hash=abcdef1234567890abcdef1234567890</code>\n"
+        "<code>is_active=1</code>\n"
+        "<code>is_auth=0</code>\n\n"
+        "⚠️ Если поле не нужно менять, просто пропусти его"
+    )
+    await message.answer(formatted_message, parse_mode="HTML")
+
+    await state.update_data(user_id=user_id)
+
+    await state.set_state(EditMonitorAccountByUserID.waiting_for_form)
+
+
+@router.message(EditMonitorAccountByUserID.waiting_for_form)
+async def process_edit_monitor_account_by_user_id_form(message: Message, state: FSMContext):
+    stored_data = await state.get_data()
+    user_id = stored_data.get("user_id")
+
+    if not user_id:
+        await message.answer("❌ Не найден user_id в состоянии. Операция прервана")
+        await state.clear()
+        return
+
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+
+    lines = message.text.strip().split("\n")
+
+    valid_fields = {"user_id", "api_id", "api_hash", "is_active", "is_auth"}
+    update_data = {}
+
+    for line in lines:
+        if "=" not in line:
+            await message.answer(f"❌ Строка '{line}' не соответствует формату key=value")
+            return
+
+        key, value = line.split("=", 1)
+        key, value = key.strip(), value.strip()
+
+        if key not in valid_fields:
+            await message.answer(f"❌ Поле '{key}' нельзя изменить")
+            return
+
+        if key in ["user_id", "api_id"]:
+            if not value.isdigit():
+                await message.answer(f"❌ {key} должен содержать только цифры")
+                return
+            update_data[key] = int(value)
+
+        elif key == "api_hash":
+            if not re.fullmatch(r"\d+|[a-fA-F0-9]{32}", value):
+                await message.answer("❌ api_hash должен быть 32-значным шестнадцатеричным хэшем")
+                return
+            update_data[key] = value
+
+        elif key in ["is_active", "is_auth"]:
+            if value not in {"0", "1"}:
+                await message.answer(f"❌ {key} может быть только '0' (Нет) или '1' (Да)")
+                return
+            update_data[key] = bool(int(value))
+
+    if not update_data:
+        await message.answer("⚠️ Не указано ни одного корректного параметра для обновления")
+        return
+
+    try:
+        response = await api.update_monitor_account(update_data, pk=None, user_id=user_id)
+    except ValueError as e:
+        await message.answer(f"❌ Ошибка при обновлении аккаунта: {e}", reply_markup=get_admin_panel_keyboard())
+        await state.clear()
+        return
+
+    formatted_message = (
+        f"✅ <b>Аккаунт успешно обновлён</b>\n\n"
+        f"🔹 <b>ID:</b> {response['id']}\n"
+        f"👤 <b>User ID:</b> <code>{response['user_id']}</code>\n"
+        f"🆔 <b>API ID:</b> <code>{response['api_id']}</code>\n"
+        f"🔑 <b>API Hash:</b> <code>{response['api_hash']}</code>\n"
+        f"✅ <b>Активен:</b> {'Да' if response['is_active'] else 'Нет'}\n"
+        f"🔐 <b>Авторизован:</b> {'Да' if response['is_auth'] else 'Нет'}\n"
+        f"🕒 <b>Создан:</b> {response['created_at']}\n"
+        f"🔄 <b>Обновлён:</b> {response['updates_at']}"
+    )
+
+    await message.answer(formatted_message, parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
+    await state.clear()

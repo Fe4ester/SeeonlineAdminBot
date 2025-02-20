@@ -14,3 +14,13 @@ class GetMonitorAccountByUserID(StatesGroup):
 # --------ADD--------
 class AddMonitorAccount(StatesGroup):
     waiting_for_form = State()
+
+
+#--------EDIT--------
+class EditMonitorAccountByPK(StatesGroup):
+    waiting_for_pk = State()
+    waiting_for_form = State()
+
+class EditMonitorAccountByUserID(StatesGroup):
+    waiting_for_user_id = State()
+    waiting_for_form = State()

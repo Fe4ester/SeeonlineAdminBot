@@ -29,11 +29,15 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
         "get": [
             ("Получить весь список", "get-list-monitor-accounts"),
             ("Получить аккаунт по PK", "get-monitor-account-by-pk"),
-            ("Получить аккаунт по user_id", "get-monitor-account-by-user_id"),
+            ("Получить аккаунт по UserID", "get-monitor-account-by-user_id"),
             ("<<< Назад", "back-monitor-accounts"),
         ],
         "add": [], # нахуй не нужно, на будущее
-        "edit": [],
+        "edit": [
+            ("Изменить по PK", "edit-monitor-account-by-pk"),
+            ("Изменить по UserID", "edit-monitor-account-by-user_id"),
+            ("<<< Назад", "back-monitor-accounts"),
+        ],
         "delete": [],
         "auth": []
     }
