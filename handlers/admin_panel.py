@@ -15,6 +15,8 @@ from states import (
     AddMonitorAccount,
     EditMonitorAccountByPK,
     EditMonitorAccountByUserID,
+    DeleteMonitorAccountByPK,
+    DeleteMonitorAccountByUserID,
 )
 
 # клавиатуры
@@ -180,7 +182,7 @@ async def process_get_monitor_account_by_pk(message: Message, state: FSMContext)
     try:
         pk = int(message.text)
     except ValueError:
-        await message.answer("❌ Ошибка! Введите корректный ID (число)")
+        await message.answer("❌ Введите корректный ID (число)")
         return
 
     try:
@@ -211,7 +213,7 @@ async def process_get_monitor_account_by_pk(message: Message, state: FSMContext)
     try:
         user_id = int(message.text)
     except ValueError:
-        await message.answer("❌ Ошибка! Введите корректный UserID (число)")
+        await message.answer("❌ Введите корректный UserID (число)")
         return
 
     try:
@@ -396,6 +398,7 @@ async def process_edit_monitor_account_by_pk_form(message: Message, state: FSMCo
 
     await state.clear()
 
+
 # Изменение по user_id
 @router.message(EditMonitorAccountByUserID.waiting_for_user_id)
 async def process_edit_monitor_account_by_user_id(message: Message, state: FSMContext):
@@ -510,4 +513,48 @@ async def process_edit_monitor_account_by_user_id_form(message: Message, state: 
     )
 
     await message.answer(formatted_message, parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
+    await state.clear()
+
+
+# --------DELETE--------
+
+@router.message(DeleteMonitorAccountByPK.waiting_for_pk)
+async def process_delete_monitor_account_by_pk(message: Message, state: FSMContext):
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+
+    try:
+        pk = int(message.text)
+    except ValueError:
+        await message.answer("❌ Введите корректный ID (число)")
+        return
+
+    try:
+        await api.delete_monitor_account(pk=pk)
+    except ValueError:
+        await message.answer("📭 Аккаунт с таким ID не найден")
+        return
+
+    await message.answer("✅ Аккаунт удален", parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
+
+    await state.clear()
+
+
+@router.message(DeleteMonitorAccountByUserID.waiting_for_user_id)
+async def process_delete_monitor_account_by_user_id(message: Message, state: FSMContext):
+    api = SeeOnlineAPI(config.SEEONLINE_API_URL)
+
+    try:
+        user_id = int(message.text)
+    except ValueError:
+        await message.answer("❌ Введите корректный UserID (число)")
+        return
+
+    try:
+        await api.delete_monitor_account(user_id=user_id)
+    except ValueError:
+        await message.answer("📭 Аккаунт с таким ID не найден")
+        return
+
+    await message.answer("✅ Аккаунт удален", parse_mode="HTML", reply_markup=get_admin_panel_keyboard())
+
     await state.clear()

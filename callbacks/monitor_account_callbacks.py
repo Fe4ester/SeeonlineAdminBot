@@ -11,6 +11,8 @@ from states import (
     AddMonitorAccount,
     EditMonitorAccountByPK,
     EditMonitorAccountByUserID,
+    DeleteMonitorAccountByPK,
+    DeleteMonitorAccountByUserID,
 )
 
 # клавиатуры
@@ -70,14 +72,12 @@ async def edit_monitor_accounts_callback(callback: CallbackQuery):
     )
 
 
-# todo допилить
 @router.callback_query(F.data == "delete-monitor-accounts")
 async def delete_monitor_accounts_callback(callback: CallbackQuery):
     await callback.message.edit_text(
-        'Текущий callback:\n delete-monitor-accounts',
-        reply_markup=MonitorAccountsKeyboard.get_keyboard('main')
+        'Выберите способ удаления:',
+        reply_markup=MonitorAccountsKeyboard().get_keyboard('delete')
     )
-    await callback.answer()
 
 
 # todo допилить
@@ -156,4 +156,20 @@ async def edit_monitor_account_by_pk_callback(callback: CallbackQuery, state: FS
 async def edit_monitor_account_by_user_id_callback(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer("🔍 Введите UserID аккаунта для изменения:", reply_markup=get_cancel_keyboard())
     await state.set_state(EditMonitorAccountByUserID.waiting_for_user_id)
+    await callback.answer()
+
+
+# ----------------DELETE---------------
+
+@router.callback_query(F.data == "delete-monitor-account-by-pk")
+async def delete_monitor_account_by_pk_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🔍 Введите ID (PK) аккаунта для удаления:", reply_markup=get_cancel_keyboard())
+    await state.set_state(DeleteMonitorAccountByPK.waiting_for_pk)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "delete-monitor-account-by-user_id")
+async def delete_monitor_account_by_user_id_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🔍 Введите UserID аккаунта для удаления:", reply_markup=get_cancel_keyboard())
+    await state.set_state(DeleteMonitorAccountByUserID.waiting_for_user_id)
     await callback.answer()
