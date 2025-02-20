@@ -18,3 +18,12 @@ def get_admin_panel_keyboard() -> ReplyKeyboardMarkup:
     )
 
     return kb_builder.as_markup(resize_keyboard=True)
+
+
+def get_cancel_keyboard() -> ReplyKeyboardMarkup:
+    kb_builder = ReplyKeyboardBuilder()
+    kb_builder.row(
+        KeyboardButton(text="❌ Отменить")
+    )
+
+    return kb_builder.as_markup(resize_keyboard=True)
