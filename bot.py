@@ -1,7 +1,7 @@
 import asyncio
 import signal
 from aiogram import Bot, Dispatcher
-from config import load_config
+from config import load_config, storage
 
 # роутеры
 ## хендлеры
@@ -12,10 +12,11 @@ from callbacks.monitor_account_callbacks import router as monitor_account_callba
 from callbacks.monitored_account_callbacks import router as monitored_account_callbacks_router
 from callbacks.monitor_setting_callbacks import router as monitor_setting_callbacks_router
 from callbacks.additional_callbacks import router as additional_callbacks_router
+from callbacks.base_callbacks import router as base_callbacks_router
 
 config = load_config()
 bot = Bot(token=config.BOT_TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(storage=storage, bot=bot)
 
 dp.include_routers(
     base_commands_router,
@@ -25,6 +26,7 @@ dp.include_routers(
     monitored_account_callbacks_router,
     monitor_setting_callbacks_router,
     additional_callbacks_router,
+    base_callbacks_router,
 )
 
 
