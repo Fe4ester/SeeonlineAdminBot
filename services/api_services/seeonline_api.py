@@ -4,7 +4,6 @@ import urllib.parse
 
 class SeeOnlineAPI:
     def __init__(self, base_url: str):
-        # Убедимся, что base_url не содержит завершающего слэша
         self.base_url = base_url.rstrip("/")
 
     async def _fetch_json(self, method: str, url: str, data: dict = None) -> dict:
