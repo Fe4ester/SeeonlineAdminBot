@@ -87,12 +87,6 @@ async def auth_monitor_accounts_callback(callback: CallbackQuery):
     await callback.answer()
 
 
-# кнопочка возвращения, общая для всех действий monitor-accounts
-@router.callback_query(F.data == "back-monitor-accounts")
-async def back_monitor_accounts_callback(callback: CallbackQuery):
-    await callback.message.edit_text('Выберите действие:', reply_markup=MonitorAccountsKeyboard.get_keyboard('main'))
-
-
 # ----------------GET---------------
 
 # ---- с пагинацией, не путаться ----
