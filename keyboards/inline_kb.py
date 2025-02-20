@@ -2,7 +2,7 @@ from typing import List, Tuple, Dict
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-
+# базовый класс для исключения повторения кода
 class BaseCategoryKeyboard:
     menus: Dict[str, List[Tuple[str, str]]] = {}
 
@@ -30,8 +30,9 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
             ("Получить весь список", "get-list-monitor-accounts"),
             ("Получить аккаунт по PK", "get-monitor-account-by-pk"),
             ("Получить аккаунт по user_id", "get-monitor-account-by-user_id"),
+            ("<<< Назад", "back-monitor-accounts"),
         ],
-        "add": [],
+        "add": [], # нахуй не нужно, на будущее
         "edit": [],
         "delete": [],
         "auth": []
@@ -82,3 +83,36 @@ class AdditionalFunctionsKeyboard(BaseCategoryKeyboard):
             ("Функция доп. 2", "additional_sub2"),
         ],
     }
+
+
+# остальные клавиатуры, доп.
+
+## пагинация, по сути подходит для всех хэндлеров, но поаккуратнее, потому что пока что костыль
+# todo сделать все по красоте, без копипасты в будущем
+def get_pagination_keyboard(page: int, total_pages: int):
+    buttons = []
+
+    if page > 1:
+        buttons.append(
+            InlineKeyboardButton(
+                text="<< Назад",
+                callback_data=f"monitor_accounts_page:{page - 1}"
+            )
+        )
+
+    buttons.append(
+        InlineKeyboardButton(
+            text=f"{page}/{total_pages}",
+            callback_data="noop"  # заглушка, от всяких долбаебов
+        )
+    )
+
+    if page < total_pages:
+        buttons.append(
+            InlineKeyboardButton(
+                text="Вперёд >>",
+                callback_data=f"monitor_accounts_page:{page + 1}"
+            )
+        )
+
+    return InlineKeyboardMarkup(inline_keyboard=[buttons])
