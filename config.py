@@ -18,6 +18,8 @@ class Config:
 
     SEEONLINE_API_URL: str
 
+    ALLOWED_USERS: list[int]
+
     REDIS_URL: str
 
 
@@ -27,7 +29,8 @@ def load_config() -> Config:
         SMSBOWER_API_URL=os.getenv("SMSBOWER_API_URL"),
         SMSBOWER_TOKEN=os.getenv("SMSBOWER_TOKEN"),
         SEEONLINE_API_URL=os.getenv("SEEONLINE_API_URL"),
-        REDIS_URL=os.getenv("REDIS_URL")
+        ALLOWED_USERS=list(map(int, os.getenv("ALLOWED_USERS", "").split(","))),
+        REDIS_URL=os.getenv("REDIS_URL"),
     )
 
 

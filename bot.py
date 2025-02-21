@@ -14,9 +14,17 @@ from callbacks.monitor_setting_callbacks import router as monitor_setting_callba
 from callbacks.additional_callbacks import router as additional_callbacks_router
 from callbacks.base_callbacks import router as base_callbacks_router
 
+# мидлвари
+from middleware import WhitelistMiddleware
+
+# конфиг епта
 config = load_config()
 bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher(storage=storage, bot=bot)
+
+# мидлвари
+dp.message.middleware(WhitelistMiddleware(config.ALLOWED_USERS))
+dp.callback_query.middleware(WhitelistMiddleware(config.ALLOWED_USERS))
 
 dp.include_routers(
     base_commands_router,
@@ -40,6 +48,7 @@ async def shutdown_trigger():
 
 async def main():
     print("Бот запущен. Нажмите Ctrl+C для остановки.")
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, shutdown_trigger=shutdown_trigger)
 
     print("Останавливаем бота...")
