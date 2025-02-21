@@ -25,7 +25,6 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
             ("Добавить аккаунты", "add-monitor-accounts"),
             ("Изменить данные", "edit-monitor-accounts"),
             ("Удалить аккаунты", "delete-monitor-accounts"),
-            ("Авторизовать аккаунты", "auth-monitor-accounts"),
         ],
         "get": [
             ("Получить весь список", "get-list-monitor-accounts"),
@@ -44,11 +43,6 @@ class MonitorAccountsKeyboard(BaseCategoryKeyboard):
             ("Удалить по UserID", "delete-monitor-account-by-user_id"),
             ("<<< Назад", "back-monitor-accounts"),
         ],
-        "auth": [
-            ("Авторизовать по PK", "auth-monitor-account-by-pk"),
-            ("Авторизовать по UserID", "auth-monitor-account-by-user_id"),
-            ("<<< Назад", "back-monitor-accounts"),
-        ]
     }
 
 

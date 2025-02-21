@@ -13,7 +13,6 @@ from states import (
     EditMonitorAccountByUserID,
     DeleteMonitorAccountByPK,
     DeleteMonitorAccountByUserID,
-    AuthMonitorAccountByPK,
 )
 
 # клавиатуры
@@ -78,15 +77,6 @@ async def delete_monitor_accounts_callback(callback: CallbackQuery):
     await callback.message.edit_text(
         'Выберите способ удаления:',
         reply_markup=MonitorAccountsKeyboard().get_keyboard('delete')
-    )
-
-
-# тут ебать путонница к коде, аккуратнее, возможны утечки памяти
-@router.callback_query(F.data == "auth-monitor-accounts")
-async def auth_monitor_accounts_callback(callback: CallbackQuery):
-    await callback.message.edit_text(
-        'Выберите способ авторизации:',
-        reply_markup=MonitorAccountsKeyboard().get_keyboard('auth')
     )
 
 
@@ -173,14 +163,3 @@ async def delete_monitor_account_by_user_id_callback(callback: CallbackQuery, st
     await callback.message.answer("🔍 Введите UserID аккаунта для удаления:", reply_markup=get_cancel_keyboard())
     await state.set_state(DeleteMonitorAccountByUserID.waiting_for_user_id)
     await callback.answer()
-
-
-# ----------------AUTH----------------
-
-# todo допилить тк я не разобрался как делать авторизацию поэтапно
-
-@router.callback_query(F.data == "auth-monitor-account-by-pk")
-async def auth_monitor_account_by_pk_callback(callback: CallbackQuery, state: FSMContext):
-    # await callback.message.answer("🔍 Введите ID (PK) аккаунта для авторизации:", reply_markup=get_cancel_keyboard())
-    # await state.set_state(AuthMonitorAccountByPK.waiting_for_pk)
-    await callback.answer('Не работает эта поебень.')
